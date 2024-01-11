@@ -1,0 +1,203 @@
+/*
+	Programmer Name:		Lakin West
+	Build Date:				04/02/23
+	Program Description:	Read data from file, calculate average, maximum value,
+							minimum value, standard deviation, and display
+							quartile summary.
+*/
+
+//Pre-processing Details
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+#include <cmath>
+using namespace std;
+
+//Function Prototypes - take a good look at how these are defined
+void readData(double[], int&);
+double calcAvg(double[], int);
+void calcMaxMin(double[], int, int&, int&);
+double calcStdDev(double[], int, double);
+void outputQuarSum(double[], int, int&, int&, int&, int&);
+
+int main()
+{
+	//Declare Variables
+	double numbers[500], avgNum = 0.0, stdDev = 0.0;
+	int arraySize = 0, maxIndex = 0, minIndex = 0;
+	int q1count = 0, q2count = 0, q3count = 0, q4count = 0;
+	int maxNum = 0, minNum = 0;
+
+	//Get data from file
+	readData(numbers, arraySize);
+
+	//Lets see if we have some data...
+	for (int i = 0; i < arraySize; i++)
+		cout << numbers[i] << ' ';
+	//Use calcAvg() to assign average number
+	avgNum = calcAvg(numbers, arraySize);
+
+	//Use calcMaxMin() to get index for maximum/minimum number
+	calcMaxMin(numbers, arraySize, maxIndex, minIndex);
+	
+	minNum = numbers[minIndex];
+	maxNum = numbers[maxIndex];
+
+	//Get standard deviation from data using calcStdDev()
+
+	stdDev = calcStdDev(numbers, arraySize, avgNum);
+
+	//Sort data into quartile summary using outputQuarSum()
+	outputQuarSum(numbers, arraySize, q1count, q2count, q3count, q4count);
+
+
+	//Output Final Summary
+	cout << "\n                 SUMMARY                      " << endl;
+	cout << "----------------------------------------" << endl;
+	cout << right << fixed << showpoint << setprecision(1);
+	cout << setw(20) << "Data Elements:" << setw(10) << arraySize << endl;
+	cout << setw(20) << "Mean:" << setw(10) << avgNum << endl;
+	cout << setw(20) << "Maximum:" << setw(10) << maxNum << endl;
+	cout << setw(20) << "Minimum:" << setw(10) << minNum << endl;
+	cout << setw(20) << "Standard Deviation:" << setw(10) << stdDev << endl;
+	cout << setw(20) << "Quartile 1 Scores:" << setw(10) << q1count << endl;
+	cout << setw(20) << "Quartile 2 Scores:" << setw(10) << q2count << endl;
+	cout << setw(20) << "Quartile 3 Scores:" << setw(10) << q3count << endl;
+	cout << setw(20) << "Quartile 4 Scores:" << setw(10) << q4count << endl;
+	cout << "----------------------------------------" << endl;
+	cout << "END OF JOB TERMINATION" << endl << endl;
+
+	return 0;
+}
+
+
+//ReadData() Function Definition:	This function will read data from a file
+//									and store it in an array.
+
+void readData(double numbers[], int& elemNums)
+{
+	//Declare Variables
+	int count = 0;
+	ifstream inputFile;
+
+	//Open File
+	inputFile.open("array_pgmdata.txt");
+
+	//Read Data from File
+	while (inputFile >> numbers[count])
+		count++;
+
+	//Assign the number of elements to elemNums
+	elemNums = count;
+
+	//Close File
+	inputFile.close();
+}
+
+
+//calcAvg() Function Definition:	This funtion will calculate the average of all numbers
+//									in an array.
+
+double calcAvg(double numbers[], int elemNums)
+{
+	//Declare Variables
+	double sum = 0, avg;
+
+	//Sum numbers[]...use a loop
+	for (int i = 0; i < elemNums; i++)
+	{
+		sum += numbers[i];
+	}
+
+	//Return the average of all the numbers of the array
+	
+	avg = sum / elemNums;
+
+	return avg;
+
+}
+
+//calcMaxMin() Function Definition:	This function will determine the index for the maximum
+//									and minimum number of an array.
+
+void calcMaxMin(double numbers[], int elemNums, int& maxIndex, int& minIndex)
+{
+	//Declare Variables
+	double highest, lowest;
+	//Calculate Maximum Value...find highest number...need a loop
+	highest = numbers[0];
+	for (int count = 1; count < elemNums; count++)
+	{
+		if (numbers[count] > highest)
+		{
+			highest = numbers[count];
+			maxIndex = count;
+		}
+			
+	}
+
+
+
+	//Calculate Minimum Value...find lowest number...need a loop
+	lowest = numbers[0];
+	for (int count = 1; count < elemNums; count++)
+	{
+		if (numbers[count] < lowest)
+		{
+			lowest = numbers[count];
+			minIndex = count;
+		}
+	}
+
+	return;
+
+}
+
+//calcStdDev() Function Definition:	This function will calculate standard deviation
+//									from the calculated data.
+
+double calcStdDev(double numbers[], int elemNums, double avgNum)
+{
+	//Declare Variables
+	double sum = 0.0, standDev = 0.00;
+
+	//Calculate Standard Deviation..implement std dev pseudocode in assignement...use a loop.
+	for (int i = 0; i < elemNums; i++)
+	{
+		sum += pow((numbers[i] - avgNum), 2);
+	}
+
+	standDev = sqrt((1.0 / elemNums) * sum);
+	
+	//Finish calculating standard deviation and return value
+
+	return standDev;
+}
+
+//outputQuarSum() Function Definition:	This function will display the number of
+//										scores in each quartile.
+
+void outputQuarSum(double numbers[], int elemNums, int& q1count, int& q2count, int& q3count, int& q4count)
+{
+
+	//Declare local variables
+	int count = 0;
+
+
+	//Assign each score to the proper quartile...use a loop with if-else if structure
+	for (count; count < elemNums; count++)
+	{
+		if (numbers[count] >= 75 && numbers[count] <= 100)
+			(q1count++);
+
+		if (numbers[count] >= 50 && numbers[count] <= 74)
+			(q2count++);
+
+		if (numbers[count] >= 25 && numbers[count] <= 49)
+			(q3count++);
+
+		if (numbers[count] >= 0 && numbers[count] <= 24)
+			(q4count++);
+	}
+
+}
